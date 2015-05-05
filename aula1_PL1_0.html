@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <style>
+            body {
+                margin:0px;
+                overflow: none;
+            }
+        </style>
+        <script src="libs/three.min.js"></script>
+        <script>
+        
+            //alert("ola");
+            function do3D() {
+                // escolher o renderer
+                var renderer = new THREE.WebGLRenderer();
+                
+                // calcular razão de aspeto.
+                
+                var aspect = window.innerWidth / window.innerHeight;
+                
+                console.log(window.innerWidth,window.innerHeight,aspect);    
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                
+                document.body.appendChild(renderer.domElement);
+                
+                // criar uma cena
+                var scene = new THREE.Scene();
+                
+                // eixos
+                var axis = new THREE.AxisHelper(10);
+                
+                // adicionar à cena
+                scene.add(axis);
+                
+                // cubo
+                var cubegeom = new THREE.BoxGeometry(1,1,1);
+                var cubemat  = new THREE.MeshBasicMaterial(
+                    {color:0xFFFF00, wireframe:true});
+                var cube = new THREE.Mesh(cubegeom,cubemat);
+                
+                // Desafio 1: tetraedro TetraHedron
+                // com faces coloridas
+                var tetrageom = new THREE.TetrahedronGeometry();
+
+                var mats = Array();
+                 mats[0] = new THREE.MeshPhongMaterial(
+                    {color:0xFFFF00, ambient:0xFFFFFF});
+                 mats[1] = new THREE.MeshPhongMaterial(
+                    {color:0xFF0000});
+                 mats[2] = new THREE.MeshPhongMaterial(
+                    {color:0x0000FF});
+                 mats[3] = new THREE.MeshPhongMaterial(
+                    {color:0x00FF00});
+                
+                
+                var tetramat = new THREE.MeshFaceMaterial(mats);
+                var tetra = new THREE.Mesh(tetrageom,tetramat);
+                
+                tetra.position.set(0,1,0);
+                
+                scene.add(tetra);
+                
+               var ambientLight = new THREE.AmbientLight(0xff0000);
+               scene.add(ambientLight);
+                // Desafio 2: Piramide quadrangular com definicao de 
+                // vertices e faces.
+            var dirLight = new THREE.DirectionalLight(0xAAAAAA,1);
+            dirLight.position.set( 0, 0, 10 );
+            scene.add(dirLight);
+                
+                
+                scene.add(cube);
+                
+                
+                // camara
+                camera = new THREE.PerspectiveCamera(50,aspect,0.1,100);
+                // posicionar a camara
+                camera.position.set(3,3,3);
+                camera.lookAt(scene.position);
+                
+                
+                function doRender() {
+                    requestAnimationFrame(doRender);
+                    cube.rotation.x += 0.1;
+                    tetra.rotation.y += 0.1;
+                    renderer.render(scene,camera);
+                }
+                
+                doRender();
+                
+                //alert("ole");
+            }
+        </script>
+    </head>
+    
+    <body onload="do3D();">
+    </body>
+    
+    
+</html>

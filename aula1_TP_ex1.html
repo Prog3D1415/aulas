@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <title> Primeiro Exemplo WebGL / Three.js</title>
+        <script src="libs/three.js"></script>
+        <style>
+            #canvas3D {
+                width:  640px;
+                height: 480px;
+            }
+            body {
+                overflow: hidden;
+                margin:0px;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas3D"> </canvas>
+    </body>
+    <script>
+            // element to render into | elemento onde efetuar o render
+            mycanvas = document.getElementById("canvas3D");
+        
+            // aspect to use by the camera | razão de aspeto para câmara
+            // aspect = 640/480;
+            aspect = mycanvas.offsetWidth/ mycanvas.offsetHeight;
+            console.log( mycanvas.offsetWidth, mycanvas.offsetHeight, aspect);
+        
+            // new scene | nova cena
+            myscene = new THREE.Scene();
+        
+            // new camera | nova camara
+            // position the camera | posicionar
+            // point the camera | apontar
+            mycamera = new THREE.PerspectiveCamera(60,aspect,0.1,100);
+            mycamera.position.set(3,3,3);
+            //mycamera.lookAt(new THREE.Vector3( -1, -1, -1 ));
+            mycamera.lookAt(myscene.position);
+            
+        
+            // entities to render | entidades a visualizar
+            // geometry,material -> mesh | geometria, materiais -> malha
+            // add entities to the scene | adicionar entidades à cena
+            mygeom = new THREE.BoxGeometry(1,1,1);
+            mymat  = new THREE.MeshBasicMaterial (
+                    {color: 0xffffff});
+            mycube = new THREE.Mesh(mygeom, mymat);
+            myscene.add(mycube);
+        
+            // visual help, renders axis | eixos
+            myaxes = new THREE.AxisHelper(20);
+            myscene.add(myaxes);
+            
+            
+            // a new WebGL renderer | novo renderer webGL
+            // set renderer size | configuar tamanho / resolução
+            // other setup | outras inicializações
+            myrenderer = new THREE.WebGLRenderer({canvas : mycanvas});
+            //myrenderer = new THREE.WebGLRenderer();
+            myrenderer.setSize( 640, 480 );
+            myrenderer.setClearColor(0x0000FF, 1);            
+
+            
+        
+            // frame rendering | rendering frame por frame
+            function doRender() {
+				requestAnimationFrame(doRender);
+				mycube.rotation.x += 0.1;
+				mycube.rotation.y += 0.1;
+				myrenderer.render(myscene,mycamera);
+			}
+			
+            // render
+			doRender();
+                      
+        </script>
+</html>

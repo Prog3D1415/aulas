@@ -1,0 +1,133 @@
+<html> 
+
+<head>
+	<script src="libs/three.min.js"></script>
+	<script src="libs/dat.gui.js"></script>
+
+</head>
+
+<body>
+
+</body>
+<script>
+			// uma cena
+			var myscene = new THREE.Scene();
+			
+			// uma câmara
+			// new THREE.PerspectiveCamera( fov, largura / altura, near, far )
+			var mycamera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+			mycamera.position.set(3,3,3);
+			//mycamera.lookAt(new THREE.Vector3( -1, -1, -1 ));
+			mycamera.lookAt(myscene.position);
+            myscene.add( mycamera );
+
+            // um renderer
+			var myrenderer = new THREE.WebGLRenderer();
+			myrenderer.setSize(window.innerWidth,window.innerHeight);
+			myrenderer.setClearColor(0xAAAAAA, 1);
+
+			// sombras
+            myrenderer.shadowMapEnabled = true;
+            myrenderer.shadowMapSoft = true;
+
+			// colocar o canvas / resultado do renderer na página
+			var mycanvas = myrenderer.domElement;
+			document.body.appendChild(mycanvas);
+
+			// criar uns eixos
+			myaxis = new THREE.AxisHelper(20);
+			myscene.add(myaxis);
+
+			objectog = new THREE.BoxGeometry(1,1,1,1,1,1);
+			objectom = new THREE.MeshBasicMaterial({color:0xFF0000,wireframe:false});
+
+			objecto = new THREE.Mesh(objectog,objectom);
+			
+			objecto.castShadow = true;
+			objecto.receiveShadow = true;
+			myscene.add(objecto);
+
+			miniobjectog = new THREE.BoxGeometry(0.25,0.25,0.25);
+			miniobjectom = new THREE.MeshBasicMaterial({color:0x00FF00,wireframe:false});
+
+			miniobjecto = new THREE.Mesh(miniobjectog,miniobjectom);
+			
+			miniobjecto.position.set(0,1.25,0);
+
+			miniobjecto.castShadow = true;
+			miniobjecto.receiveShadow = false;
+
+			myscene.add(miniobjecto);
+
+			planeg = new THREE.PlaneGeometry(10,10);
+			planem = new THREE.MeshBasicMaterial({color:0xFFFFFF});
+			planem2 = new THREE.MeshPhongMaterial({color:0xAAAAFF, specular:0xAAAAFF	});
+			plane = new THREE.Mesh(planeg,planem2);
+
+
+
+
+			plane.rotation.x = - Math.PI / 2;
+			plane.position.y = -2;
+
+			plane.castShadow = false;
+			plane.receiveShadow = true;
+
+			myscene.add(plane);
+
+			//luzes
+			var spotLight = new THREE.SpotLight(0xFFFFFF,1);
+            spotLight.position.set(0, 4, 0);
+
+            spotLight.angle = Math.PI/6;
+
+            spotLight.castShadow = true;
+            spotLight.shadowDarkness = 0.8;
+
+
+
+       	    //spotLight.shadowCameraVisible = true;
+        
+            spotLight.shadowCameraNear = 1;         // seems to be important
+            spotLight.shadowCameraFar = 100;
+            spotLight.shadowCameraFov = 25;
+		    spotLight.shadowBias = -0.00022;        // adjust bias to remove artifacts (can be tricky, so I've heard)
+		    spotLight.shadowMapWidth = 512;
+            spotLight.shadowMapHeight = 512;
+
+            myscene.add(spotLight);
+
+
+				// objecto	
+			var rotControls = {
+				rotx:0.000,
+				roty:0.000,
+				rotz:0.000
+			}
+			
+			var guirc = new dat.GUI();
+			
+			guirc.add(rotControls,'rotx',-.25,.25,0.05);
+			guirc.add(rotControls,'roty',-.25,.25,0.05);
+			guirc.add(rotControls,'rotz',-.25,.25,0.05);
+
+			function doRender() {
+				requestAnimationFrame(doRender);
+				objecto.rotation.x += rotControls.rotx;
+				objecto.rotation.y += rotControls.roty;
+				objecto.rotation.z += rotControls.rotz;
+
+				miniobjecto.rotation.x += rotControls.rotx;
+				miniobjecto.rotation.y += rotControls.roty;
+				miniobjecto.rotation.z += rotControls.rotz;
+
+				myrenderer.render(myscene,mycamera);
+			}
+
+			
+			doRender();
+
+
+
+</script>
+</html>

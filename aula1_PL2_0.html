@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <style>
+            body {
+                margin:0px;
+                overflow: none;
+            }
+        </style>
+        <script src="libs/three.js"></script>
+        <script>
+
+            function do3D() {
+                
+                // aspect
+                var aspect = window.innerWidth / window.innerHeight;
+                console.log(window.innerWidth,window.innerHeight, aspect);
+                
+                //renderer
+                var renderer = new THREE.WebGLRenderer();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setClearColor(0x9999FF);
+                document.body.appendChild(renderer.domElement);
+                
+                //cena
+                
+                var scene = new THREE.Scene();
+                
+                // -- criar objectos
+                
+                var cubegeom = new THREE.BoxGeometry(1,1,1);
+                var cubemat  = new THREE.MeshBasicMaterial(
+                    {color:0xFFFF00,wireframe:true});
+                var cube = new THREE.Mesh(cubegeom,cubemat);
+                
+                scene.add(cube);
+                
+                var axis = new THREE.AxisHelper(10);
+                scene.add(axis);
+                
+                //camara
+                
+                var camera = new THREE.PerspectiveCamera(60,aspect,0.5,100);
+                camera.position.set(5,5,5);
+                camera.lookAt(scene.position);
+                
+                //ciclo de render
+                
+                function animate3D() {
+                    requestAnimationFrame(animate3D);
+                    cube.rotation.x += 0.1;
+                    var s = (Math.sin(cube.rotation.x) + 1);
+                    cube.scale.set(s,s,s);
+                    renderer.render(scene,camera);
+                }
+                
+                animate3D();
+                
+                
+            }
+            
+        </script>
+    </head>
+    
+    <body onload="do3D();">
+    </body>
+</html>

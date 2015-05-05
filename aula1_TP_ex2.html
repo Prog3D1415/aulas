@@ -1,0 +1,100 @@
+<html>
+	<head>
+		<style>
+        body {
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+		<script src="libs/three.min.js"></script>
+		<script src="libs/dat.gui.min.js"></script>
+	</head>
+	<body>
+		<script>
+			// uma cena
+			var myscene = new THREE.Scene();
+			
+			// uma câmara
+			// new THREE.PerspectiveCamera( fov, largura / altura, near, far )
+			var mycamera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+			mycamera.position.set(3,3,3);
+			mycamera.lookAt(new THREE.Vector3( -1, -1, -1 ));
+			myscene.add( mycamera );
+			
+			
+			// um renderer
+			var myrenderer = new THREE.WebGLRenderer();
+			myrenderer.setSize(window.innerWidth,window.innerHeight);
+			myrenderer.setClearColor(0xAAAAAA, 1);
+			
+			// sombras
+   // myrenderer.shadowMapEnabled = true;
+   // myrenderer.shadowMapSoft = true;
+			
+			// colocar o canvas / resultado do renderer na página
+			var mycanvas = myrenderer.domElement;
+			document.body.appendChild(mycanvas);
+			
+			
+			// criar uns eixos
+			myaxis = new THREE.AxisHelper(20);
+			myscene.add(myaxis);
+			
+			
+			// geometria
+			
+			objectog = new THREE.BoxGeometry(1,1,1);
+			
+			facematerials = [
+			new THREE.MeshPhongMaterial({color:0xFFFFFF, ambient:0xFFFFFF}),
+			new THREE.MeshPhongMaterial({color:0x000000, ambient:0x000000}),
+			new THREE.MeshPhongMaterial({color:0xFF0000, ambient:0xFF0000}),
+			new THREE.MeshPhongMaterial({color:0x00FF00, ambient:0x00FF00}),
+			new THREE.MeshPhongMaterial({color:0xFFFF00, ambient:0xFFFF00}),
+			new THREE.MeshPhongMaterial({color:0x0000FF, ambient:0x0000FF})
+			]
+        
+   
+   var faceMaterial = new THREE.MeshFaceMaterial(facematerials);   	
+
+			//objecto = new THREE.Mesh(testeg,faceMaterial);
+			objecto = new THREE.Mesh(objectog,faceMaterial);
+			myscene.add(objecto);
+
+			var ambientLight = new THREE.AmbientLight(0x555555);
+   myscene.add(ambientLight);
+   
+   
+   var dirLight = new THREE.DirectionalLight(0xAAAAAA,1);
+   dirLight.position.set( 0, 0, 10 );
+   myscene.add(dirLight);
+			// objecto	
+			var rotControls = {
+				rotx:0.0,
+				roty:0.0,
+				rotz:0.0
+			}
+			
+			// fazer o render
+			//debugger;
+			
+			var guirc = new dat.GUI();
+			
+			guirc.add(rotControls,'rotx',-.25,.25).step(0.05);
+			guirc.add(rotControls,'roty',-.25,.25).step(0.05);
+			guirc.add(rotControls,'rotz',-.25,.25).step(0.05);
+			
+			function doRender() {
+				requestAnimationFrame(doRender);
+				objecto.rotation.x += rotControls.rotx;
+				objecto.rotation.y += rotControls.roty;
+				objecto.rotation.z += rotControls.rotz;
+				myrenderer.render(myscene,mycamera);
+			}
+
+			
+			doRender();
+		</script>
+	</body>
+</html>
