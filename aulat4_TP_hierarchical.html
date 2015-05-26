@@ -1,0 +1,158 @@
+<html>
+	<head>
+		<style>
+      body {
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+          }
+    </style>
+		<script src="libs/jquery-2.1.1.min.js"></script>
+		<script src="libs/three.min.js"></script>
+		<script src="libs/dat.gui.min.js"></script>
+    <script type="text/javascript" src="libs/OrbitControls.js"></script>
+
+    <script>
+      var camera, scene, renderer;
+  
+      var cameraControls;
+      var robotController;
+    
+  
+      var gridX = true;
+      var gridY = false;
+      var gridZ = false;
+      var axes = true;
+      var ground = true;
+      var fog = true;
+
+
+      var robot, robotBase, robotArm;
+
+      var globalAxis;
+  
+      var baseRadius = 50;
+      var baseHeight = 100;
+      var jointRadius = 25;
+      var armRadius = 10;
+      var armLength = 100;
+
+      
+
+      function fillScene() {
+
+          scene = new THREE.Scene();
+
+          // LIGHTS
+         var ambientLight = new THREE.AmbientLight(0xFFFFFF);
+         var light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+         light.position.set(200, 400, 500);
+         var light2 = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+         light2.position.set(-200, 400, -500);
+         //scene.add(ambientLight);
+         //scene.add(light);
+         //scene.add(light2);
+
+         // global axis
+
+         globalAxis = new THREE.AxisHelper(500);
+         scene.add(globalAxis);
+
+         //robot
+         robot = new THREE.Object3D();
+         scene.add(robot);
+
+         //base
+         robotBase = new THREE.Object3D();
+         //robotBase.position.y = baseHeight/2;
+         robot.add(robotBase);
+
+         // robot base axis
+         rbAxis = new THREE.AxisHelper(500);
+         robotBase.add(rbAxis);
+
+         // meshs da base
+         robotBaseGeom = new THREE.CylinderGeometry( baseRadius, baseRadius, baseHeight, 32, 1);
+         robotBaseMat = new THREE.MeshBasicMaterial( {color:0xFF0000} );
+         robotBaseM = new THREE.Mesh(robotBaseGeom, robotBaseMat);
+         robotBaseM.position.y = baseHeight/2;
+         
+         robotBase.add(robotBaseM);
+
+         //braco // arm
+         robotArm = new THREE.Object3D();
+         robotArm.position.y = baseHeight + jointRadius;
+         robotBase.add(robotArm);
+
+          // robot arm axis
+         raaxis = new THREE.AxisHelper(500);
+         robotArm.add(raaxis);
+
+         //joint
+         robotArmJointGeom = new THREE.SphereGeometry( jointRadius, 32, 32);
+         robotArmJointMat = new THREE.MeshBasicMaterial( {color:0x00FF00} );
+         robotArmJoint = new THREE.Mesh(robotArmJointGeom, robotArmJointMat);
+         robotArm.add(robotArmJoint);
+
+
+         //arm Ext
+         robotArmExtGeom = new THREE.CylinderGeometry( armRadius, armRadius, armLength, 32, 1);
+         robotArmExtMat = new THREE.MeshBasicMaterial( {color : 0x0000FF} );
+         robotArmExt = new THREE.Mesh(robotArmExtGeom, robotArmExtMat);
+         robotArmExt.position.y = armLength/2 + jointRadius;
+         robotArm.add(robotArmExt);
+
+         //robotArm.rotation.x = Math.PI/3;
+         robotArm.rotation.z = -Math.PI/6;
+
+      }
+
+      function init() {
+        fillScene();
+
+        var container = document.getElementById('container');
+
+        var cWidth = container.scrollWidth;
+        var cHeight = container.scrollHeight;
+
+        var cAspect = cWidth / cHeight;
+
+
+        //console.log(container);
+        console.log(container.scrollWidth);
+
+        // renderer
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(cWidth, cHeight);
+        renderer.setClearColor(0xAAAAFF);
+
+        var renderCanvas = renderer.domElement;
+        container.appendChild(renderCanvas);
+
+        //camera
+        camera = new THREE.PerspectiveCamera( 30, cAspect, 1, 2000 );
+        camera.position.set(-800,800,500);
+        camera.lookAt(scene.position);
+
+        // ORBIT CONTROLS
+        cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
+        render();
+
+      }
+
+      function render() {
+         renderer.render(scene,camera);
+         requestAnimationFrame(render);
+      }
+
+
+
+      //init();
+
+    </script>
+  </head>
+  
+  <body id="container" onload='init();'>
+  
+  </body>
+  </html>
