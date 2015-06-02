@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<style>
+        	body {
+            	/* set margin to 0 and overflow to hidden, to go fullscreen */
+            	margin: 0;
+            	overflow: hidden;
+        	}
+    	</style>
+		<script src="libs/three.min.js"></script>
+		<script src="libs/dat.gui.min.js"></script>
+	</head>
+	<body>
+	<script>
+			// uma cena
+			var myscene = new THREE.Scene();
+			
+			// uma câmara
+			// new THREE.PerspectiveCamera( fov, largura / altura, near, far )
+			var mycamera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+			mycamera.position.set(3,3,3);
+			mycamera.lookAt(new THREE.Vector3( -1, -1, -1 ));
+			myscene.add( mycamera );
+			
+			// um renderer
+			var myrenderer = new THREE.WebGLRenderer();
+			myrenderer.setSize(window.innerWidth,window.innerHeight);
+			myrenderer.setClearColor(0xAAAAAA, 1);
+			
+			// colocar o canvas / resultado do renderer na página
+			var mycanvas = myrenderer.domElement;
+			document.body.appendChild(mycanvas);
+			
+			// criar uns eixos
+			myaxis = new THREE.AxisHelper(20);
+			myscene.add(myaxis);
+
+			//geometria
+			objectog = new THREE.Geometry();
+
+			v0 = new THREE.Vector3( 0.5,  0.5,  0.5);
+			v1 = new THREE.Vector3( 0.5, -0.5,  0.5);
+			v2 = new THREE.Vector3(-0.5, -0.5,  0.5);
+			v3 = new THREE.Vector3(-0.5,  0.5,  0.5);
+			v4 = new THREE.Vector3( 0.5,  0.5, -0.5);
+			v5 = new THREE.Vector3( 0.5, -0.5, -0.5);
+			v6 = new THREE.Vector3(-0.5, -0.5, -0.5);
+			v7 = new THREE.Vector3(-0.5,  0.5, -0.5);
+
+			objectog.vertices.push(v0);
+			objectog.vertices.push(v1);
+			objectog.vertices.push(v2);
+			objectog.vertices.push(v3);
+			objectog.vertices.push(v4);
+			objectog.vertices.push(v5);
+			objectog.vertices.push(v6);
+			objectog.vertices.push(v7);
+
+			f00 = new THREE.Face3( 1, 0, 3);
+			f01 = new THREE.Face3( 2, 1, 3);
+
+			f10 = new THREE.Face3( 5, 4, 0);
+			f11 = new THREE.Face3( 5, 0, 1);
+
+			f20 = new THREE.Face3( 7, 4, 5);
+			f21 = new THREE.Face3( 7, 5, 6);
+
+			f30 = new THREE.Face3( 7, 6, 3);
+			f31 = new THREE.Face3( 3, 6, 2);
+
+			f40 = new THREE.Face3( 0, 4, 7);
+			f41 = new THREE.Face3( 0, 7, 3);
+
+			f50 = new THREE.Face3( 6, 5, 1);
+			f51 = new THREE.Face3( 6, 1, 2);
+
+			objectog.faces.push(f00);
+			objectog.faces.push(f01);
+
+			objectog.faces.push(f10);
+			objectog.faces.push(f11);
+
+			objectog.faces.push(f20);
+			objectog.faces.push(f21);
+
+			objectog.faces.push(f30);
+			objectog.faces.push(f31);
+
+			objectog.faces.push(f40);
+			objectog.faces.push(f41);
+
+			objectog.faces.push(f50);
+			objectog.faces.push(f51);
+
+
+			url 	=  "images/molumen_small_funny_angry_monster.jpg";
+			maptex  = THREE.ImageUtils.loadTexture(url);
+
+			uv00 =  new THREE.Vector2( 0, 0);
+			uv10 =  new THREE.Vector2( 1, 0);
+			uv01 =  new THREE.Vector2( 0, 1);
+			uv11 =  new THREE.Vector2( 1, 1);
+
+			objectog.faceVertexUvs[0].push([uv10.clone(),uv11.clone(),uv01.clone()]);
+			objectog.faceVertexUvs[0].push([uv00.clone(),uv10.clone(),uv01.clone()]);
+
+			objectog.faceVertexUvs[0].push([uv01.clone(),uv00.clone(),uv10.clone()]);
+			objectog.faceVertexUvs[0].push([uv01.clone(),uv10.clone(),uv11.clone()]);
+
+			objectom = new THREE.MeshBasicMaterial( {color:0xAAFFAA, map: maptex} );
+
+			objecto = new THREE.Mesh(objectog, objectom);
+
+			myscene.add(objecto);
+
+			var gui = new dat.GUI();
+		   // objecto	
+			var rotControls = {
+				rotx:0.0,
+				roty:0.0,
+				rotz:0.0
+			}
+
+			gui.add(rotControls,'rotx',-.25,.25).step(0.05);
+			gui.add(rotControls,'roty',-.25,.25).step(0.05);
+			gui.add(rotControls,'rotz',-.25,.25).step(0.05);
+
+			function doRender() {
+				requestAnimationFrame(doRender);
+				objecto.rotation.x += rotControls.rotx;
+				objecto.rotation.y += rotControls.roty;
+				objecto.rotation.z += rotControls.rotz;
+				myrenderer.render(myscene,mycamera);
+			}
+
+			doRender();
+
+	</script>
+	</body>
+</html>
