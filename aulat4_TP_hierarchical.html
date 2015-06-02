@@ -12,11 +12,14 @@
 		<script src="libs/dat.gui.min.js"></script>
     <script type="text/javascript" src="libs/OrbitControls.js"></script>
 
+    <script src="libs/threex.keyboardstate.js"></script>
+
     <script>
       var camera, scene, renderer;
   
       var cameraControls;
-      var robotController;
+      var guiController;
+      var updateFcts = new Array();
     
   
       var gridX = true;
@@ -31,17 +34,17 @@
 
       var globalAxis;
   
-      var baseRadius = 50;
-      var baseHeight = 100;
+      var baseRadius  = 50;
+      var baseHeight  = 100;
       var jointRadius = 25;
-      var armRadius = 10;
-      var armLength = 100;
+      var armRadius   = 10;
+      var armLength   = 100;
 
       
 
       function fillScene() {
 
-          scene = new THREE.Scene();
+         scene = new THREE.Scene();
 
           // LIGHTS
          var ambientLight = new THREE.AmbientLight(0xFFFFFF);
@@ -54,32 +57,29 @@
          //scene.add(light2);
 
          // global axis
-
          globalAxis = new THREE.AxisHelper(500);
          scene.add(globalAxis);
 
-         //robot
+         //robot (container)
          robot = new THREE.Object3D();
          scene.add(robot);
 
-         //base
+         //base (conatainer)
          robotBase = new THREE.Object3D();
-         //robotBase.position.y = baseHeight/2;
          robot.add(robotBase);
 
-         // robot base axis
+         // robot base axis 
          rbAxis = new THREE.AxisHelper(500);
          robotBase.add(rbAxis);
 
-         // meshs da base
+         // meshes da base
          robotBaseGeom = new THREE.CylinderGeometry( baseRadius, baseRadius, baseHeight, 32, 1);
-         robotBaseMat = new THREE.MeshBasicMaterial( {color:0xFF0000} );
-         robotBaseM = new THREE.Mesh(robotBaseGeom, robotBaseMat);
+         robotBaseMat  = new THREE.MeshBasicMaterial( {color:0xFF0000} );
+         robotBaseM    = new THREE.Mesh(robotBaseGeom, robotBaseMat);
          robotBaseM.position.y = baseHeight/2;
-         
          robotBase.add(robotBaseM);
 
-         //braco // arm
+         // robot arm (container)
          robotArm = new THREE.Object3D();
          robotArm.position.y = baseHeight + jointRadius;
          robotBase.add(robotArm);
@@ -88,10 +88,10 @@
          raaxis = new THREE.AxisHelper(500);
          robotArm.add(raaxis);
 
-         //joint
+         // robot arm joint
          robotArmJointGeom = new THREE.SphereGeometry( jointRadius, 32, 32);
-         robotArmJointMat = new THREE.MeshBasicMaterial( {color:0x00FF00} );
-         robotArmJoint = new THREE.Mesh(robotArmJointGeom, robotArmJointMat);
+         robotArmJointMat  = new THREE.MeshBasicMaterial( {color:0x00FF00} );
+         robotArmJoint     = new THREE.Mesh(robotArmJointGeom, robotArmJointMat);
          robotArm.add(robotArmJoint);
 
 
@@ -103,16 +103,17 @@
          robotArm.add(robotArmExt);
 
          //robotArm.rotation.x = Math.PI/3;
-         robotArm.rotation.z = -Math.PI/6;
+         //robotArm.rotation.z = -Math.PI/6;
 
       }
 
       function init() {
         fillScene();
 
+
         var container = document.getElementById('container');
 
-        var cWidth = container.scrollWidth;
+        var cWidth  = container.scrollWidth;
         var cHeight = container.scrollHeight;
 
         var cAspect = cWidth / cHeight;
@@ -136,13 +137,58 @@
 
         // ORBIT CONTROLS
         cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
-        render();
 
+        setupGui();
+        setupKeyboard();
+        render();
       }
+
+
+    function setupGui() {
+      // data structure to store the control values from the GUI
+      // initialized with the default values
+        guiController = {
+          by : 0.0,                 // base rotation
+          ax : 30.0                 // arm rotation
+    };
+      // the GUI interface to change controls
+        var gui = new dat.GUI();
+
+    
+        h = gui.addFolder("Robot angles");
+        h.add(guiController, "by", -180.0, 180.0, 0.025).name("base rotation");
+        h.add(guiController, "ax", 0, 120.0, 0.025).name("arm rotation");
+  }
+
+      function setupKeyboard() {
+        keyboard  = new THREEx.KeyboardState(renderer.domElement);
+        renderer.domElement.setAttribute("tabIndex", "0");
+        renderer.domElement.focus();
+
+  
+      }
+
+
 
       function render() {
          renderer.render(scene,camera);
          requestAnimationFrame(render);
+         renderer.domElement.focus();
+          if( keyboard.pressed('a') ){
+              robotBase.rotation.y -= 1 * 0.01;     
+          } else if( keyboard.pressed('d') ){
+              robotBase.rotation.y += 1 * 0.01;
+          }
+          if( keyboard.pressed('s') ){
+            robotArm.rotation.x += 1 * 0.01;   
+          }else if( keyboard.pressed('w') ){
+            robotArm.rotation.x -= 1 * 0.01;   
+          }
+
+          // robotBase.rotation.y = guiController.by * Math.PI / 180;
+          // robotArm.rotation.x  = guiController.ax * Math.PI / 180;
+
+
       }
 
 
